@@ -1,8 +1,9 @@
-import { Outlet, NavLink, useLocation } from 'react-router-dom'
+import { Outlet, NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, GraduationCap, FileText,
-  Calendar, BarChart3, CheckSquare, Settings, ChevronRight
+  Calendar, BarChart3, CheckSquare, LogOut
 } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
 import './Layout.css'
 
 const navGroups = [
@@ -35,6 +36,9 @@ const navGroups = [
 ]
 
 export default function Layout() {
+  const { user, signOut } = useAuth()
+  const initials = user?.email?.slice(0, 2).toUpperCase() || 'RH'
+
   return (
     <div className="layout">
       <aside className="sidebar no-print">
@@ -68,11 +72,20 @@ export default function Layout() {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="user-avatar">LH</div>
-            <div>
-              <p className="user-name">Lanna Hellen</p>
+            <div className="user-avatar">{initials}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <p className="user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                {user?.email || 'Usuário'}
+              </p>
               <span className="user-role">Recursos Humanos</span>
             </div>
+            <button
+              onClick={signOut}
+              title="Sair"
+              style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', padding: 4, flexShrink: 0 }}
+            >
+              <LogOut size={14} />
+            </button>
           </div>
         </div>
       </aside>
