@@ -13,17 +13,18 @@ export function AuthProvider({ children }) {
       setLoading(false)
     })
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
+      if (event === 'SIGNED_IN') {
+        window.location.href = '/colaboradores'
+      }
+      if (event === 'SIGNED_OUT') {
+        window.location.href = '/login'
+      }
     })
 
     return () => subscription.unsubscribe()
   }, [])
-
-  async function signIn(email, password) {
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) throw error
-  }
 
   async function signOut() {
     await supabase.auth.signOut()
@@ -31,7 +32,7 @@ export function AuthProvider({ children }) {
 
   return React.createElement(
     AuthContext.Provider,
-    { value: { user, loading, signIn, signOut } },
+    { value: { user, loading, signOut } },
     children
   )
 }

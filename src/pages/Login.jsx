@@ -1,9 +1,8 @@
 import { useState } from 'react'
 import { GraduationCap, Eye, EyeOff } from 'lucide-react'
-import { useAuth } from '../hooks/useAuth'
+import { supabase } from '../lib/supabase'
 
 export default function Login() {
-  const { signIn } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -15,10 +14,17 @@ export default function Login() {
     setError('')
     setLoading(true)
     try {
-      await signIn(email, password)
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      if (error) {
+        setError('E-mail ou senha incorretos. Tente novamente.')
+        setLoading(false)
+        return
+      }
+      if (data?.session) {
+        window.location.href = '/colaboradores'
+      }
     } catch (err) {
-      setError('E-mail ou senha incorretos. Tente novamente.')
-    } finally {
+      setError('Erro ao tentar entrar. Tente novamente.')
       setLoading(false)
     }
   }
@@ -29,8 +35,6 @@ export default function Login() {
       background: 'var(--gray-50)', padding: 16
     }}>
       <div style={{ width: '100%', maxWidth: 380 }}>
-
-        {/* Logo */}
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
             width: 52, height: 52, borderRadius: 14, background: 'var(--blue)',
@@ -43,7 +47,6 @@ export default function Login() {
           <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>Gestão de Recursos Humanos</p>
         </div>
 
-        {/* Card de login */}
         <div className="card" style={{ padding: 28 }}>
           <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--gray-900)', marginBottom: 20 }}>
             Entrar na plataforma
