@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
+import FechamentoMensal from './pages/FechamentoMensal'
 import ColaboradoresLista from './pages/ColaboradoresLista'
 import ColaboradorFicha from './pages/ColaboradorFicha'
 import ColaboradorNovo from './pages/ColaboradorNovo'
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="professores/:id" element={<ProfessorFicha />} />
           <Route path="folha-administrativo" element={<FolhaAdministrativo />} />
           <Route path="folha-docente" element={<FolhaDocente />} />
+          <Route path="fechamento" element={<FechamentoMensal />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
