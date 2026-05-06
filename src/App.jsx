@@ -3,6 +3,7 @@ import { AuthProvider } from './hooks/useAuth'
 import ProtectedRoute from './components/ProtectedRoute'
 import Layout from './components/Layout'
 import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
 import ColaboradoresLista from './pages/ColaboradoresLista'
 import ColaboradorFicha from './pages/ColaboradorFicha'
 import ColaboradorNovo from './pages/ColaboradorNovo'
@@ -22,7 +23,8 @@ export default function App() {
             <Layout />
           </ProtectedRoute>
         }>
-          <Route index element={<Navigate to="/colaboradores" replace />} />
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
           <Route path="colaboradores" element={<ColaboradoresLista />} />
           <Route path="colaboradores/novo" element={<ColaboradorNovo />} />
           <Route path="colaboradores/:id" element={<ColaboradorFicha />} />
