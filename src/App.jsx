@@ -5,7 +5,8 @@ import Layout from './components/Layout'
 import Login from './pages/Login'
 import Dashboard from './pages/Dashboard'
 import FechamentoMensal from './pages/FechamentoMensal'
-import EmConstrucao from './pages/EmConstrucao'
+import CalendarioFerias from './pages/CalendarioFerias'
+import Relatorios from './pages/Relatorios'
 import ColaboradoresLista from './pages/ColaboradoresLista'
 import ColaboradorFicha from './pages/ColaboradorFicha'
 import ColaboradorNovo from './pages/ColaboradorNovo'
@@ -36,8 +37,8 @@ export default function App() {
           <Route path="folha-administrativo" element={<FolhaAdministrativo />} />
           <Route path="folha-docente" element={<FolhaDocente />} />
           <Route path="fechamento" element={<FechamentoMensal />} />
-          <Route path="ferias" element={<EmConstrucao titulo="Calendário de Férias" />} />
-          <Route path="relatorios" element={<EmConstrucao titulo="Relatórios" />} />
+          <Route path="ferias" element={<CalendarioFerias />} />
+          <Route path="relatorios" element={<Relatorios />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
