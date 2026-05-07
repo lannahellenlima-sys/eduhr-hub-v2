@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard'
 import FechamentoMensal from './pages/FechamentoMensal'
 import CalendarioFerias from './pages/CalendarioFerias'
 import Relatorios from './pages/Relatorios'
+import Historico from './pages/Historico'
 import ColaboradoresLista from './pages/ColaboradoresLista'
 import ColaboradorFicha from './pages/ColaboradorFicha'
 import ColaboradorNovo from './pages/ColaboradorNovo'
@@ -39,6 +40,7 @@ export default function App() {
           <Route path="fechamento" element={<FechamentoMensal />} />
           <Route path="ferias" element={<CalendarioFerias />} />
           <Route path="relatorios" element={<Relatorios />} />
+          <Route path="historico" element={<Historico />} />
         </Route>
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
