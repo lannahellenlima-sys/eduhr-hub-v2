@@ -1,7 +1,7 @@
 import { Outlet, NavLink } from 'react-router-dom'
 import {
   LayoutDashboard, Users, GraduationCap, FileText,
-  Calendar, BarChart3, CheckSquare, LogOut
+  Calendar, BarChart3, CheckSquare, LogOut, History
 } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import './Layout.css'
@@ -31,6 +31,7 @@ const navGroups = [
       { to: '/ferias', icon: Calendar, label: 'Calendário de Férias' },
       { to: '/relatorios', icon: BarChart3, label: 'Relatórios' },
       { to: '/fechamento', icon: CheckSquare, label: 'Fechamento Mensal' },
+      { to: '/historico', icon: History, label: 'Histórico' },
     ]
   },
 ]
