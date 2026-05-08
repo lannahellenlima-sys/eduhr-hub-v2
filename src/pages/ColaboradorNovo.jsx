@@ -33,7 +33,33 @@ export default function ColaboradorNovo() {
       return
     }
     setSaving(true)
-    const payload = { ...form, salario_base: parseFloat(form.salario_base) || 0 }
+    const payload = {
+      ...form,
+      salario_base: parseFloat(form.salario_base) || 0,
+      data_nascimento: form.data_nascimento || null,
+      cpf: form.cpf || null,
+      rg: form.rg || null,
+      email: form.email || null,
+      telefone: form.telefone || null,
+      endereco: form.endereco || null,
+      bairro: form.bairro || null,
+      cidade: form.cidade || null,
+      cep: form.cep || null,
+      estado_civil: form.estado_civil || null,
+      tipo_sanguineo: form.tipo_sanguineo || null,
+      grau_instrucao: form.grau_instrucao || null,
+      naturalidade: form.naturalidade || null,
+      centro_custo: form.centro_custo || null,
+      banco: form.banco || null,
+      agencia: form.agencia || null,
+      conta: form.conta || null,
+      pix: form.pix || null,
+      nome_pai: form.nome_pai || null,
+      nome_mae: form.nome_mae || null,
+      conjuge: form.conjuge || null,
+      dependentes: form.dependentes || null,
+      ficha_numero: form.ficha_numero || null,
+    }
     const newId = await saveColaborador(payload)
     setSaving(false)
     if (newId) navigate(`/colaboradores/${newId}`)
