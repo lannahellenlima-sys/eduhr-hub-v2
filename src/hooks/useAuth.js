@@ -8,16 +8,16 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Verifica sessão atual primeiro
     supabase.auth.getSession().then(({ data: { session } }) => {
       setUser(session?.user ?? null)
       setLoading(false)
     })
 
+    // Escuta mudanças de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user ?? null)
-      if (event === 'SIGNED_IN') {
-        window.location.href = '/colaboradores'
-      }
+
       if (event === 'SIGNED_OUT') {
         window.location.href = '/login'
       }

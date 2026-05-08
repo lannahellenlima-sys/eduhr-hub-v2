@@ -1,8 +1,13 @@
 import { useState } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { GraduationCap, Eye, EyeOff } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 export default function Login() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const from = location.state?.from?.pathname || '/dashboard'
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPass, setShowPass] = useState(false)
@@ -21,7 +26,7 @@ export default function Login() {
         return
       }
       if (data?.session) {
-        window.location.href = '/colaboradores'
+        navigate(from, { replace: true })
       }
     } catch (err) {
       setError('Erro ao tentar entrar. Tente novamente.')
