@@ -37,35 +37,28 @@ export default function ProfessorNovo() {
     }
     setSaving(true)
     const payload = {
-      nome: form.nome,
-      titulacao: form.titulacao,
-      plano: form.plano,
-      ativo: true,
-      ficha_numero: form.ficha_numero || null,
+      ...form,
+      valor_hora_teorica: parseFloat(form.valor_hora_teorica) || null,
+      valor_hora_pratica: parseFloat(form.valor_hora_pratica) || null,
+      data_nascimento: form.data_nascimento || null,
+      data_admissao: form.data_admissao || null,
       cpf: form.cpf || null,
       rg: form.rg || null,
       email: form.email || null,
-      data_nascimento: form.data_nascimento || null,
-      data_admissao: form.data_admissao || null,
-      estado_civil: form.estado_civil || null,
-      tipo_sanguineo: form.tipo_sanguineo || null,
-      naturalidade: form.naturalidade || null,
-      nacionalidade: form.nacionalidade || null,
       telefone: form.telefone || null,
       endereco: form.endereco || null,
       bairro: form.bairro || null,
       cidade: form.cidade || null,
-      estado: form.estado || null,
       cep: form.cep || null,
+      estado_civil: form.estado_civil || null,
+      tipo_sanguineo: form.tipo_sanguineo || null,
+      naturalidade: form.naturalidade || null,
       area_atuacao: form.area_atuacao || null,
       instituicao_formacao: form.instituicao_formacao || null,
       lattes: form.lattes || null,
       registro_profissional: form.registro_profissional || null,
-      vinculo: form.vinculo || null,
       regime_trabalho: form.regime_trabalho || null,
       curso_principal: form.curso_principal || null,
-      valor_hora_teorica: parseFloat(form.valor_hora_teorica) || null,
-      valor_hora_pratica: parseFloat(form.valor_hora_pratica) || null,
       banco: form.banco || null,
       agencia: form.agencia || null,
       conta: form.conta || null,
@@ -74,8 +67,8 @@ export default function ProfessorNovo() {
       nome_mae: form.nome_mae || null,
       conjuge: form.conjuge || null,
       dependentes: form.dependentes || null,
+      ficha_numero: form.ficha_numero || null,
     }
-    console.log('Payload professor:', JSON.stringify(payload))
     const newId = await saveProfessor(payload)
     setSaving(false)
     if (newId) navigate(`/professores/${newId}`)
