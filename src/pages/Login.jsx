@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { GraduationCap, Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff } from 'lucide-react'
 import { supabase } from '../lib/supabase'
 
 export default function Login() {
@@ -37,27 +37,25 @@ export default function Login() {
   return (
     <div style={{
       minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'var(--gray-50)', padding: 16
+      background: 'linear-gradient(135deg, #fff8ee 0%, #fff3e0 100%)', padding: 16
     }}>
-      <div style={{ width: '100%', maxWidth: 380 }}>
+      <div style={{ width: '100%', maxWidth: 400 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: 16, background: 'var(--blue)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 14px'
-          }}>
-            <GraduationCap size={28} color="white" />
-          </div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--gray-900)', letterSpacing: '-0.5px' }}>
-            Uni<span style={{ color: 'var(--blue)' }}>RH</span>
+          <img
+            src="/logo-unisulma.png"
+            alt="Unisulma"
+            style={{ width: 80, height: 80, objectFit: 'contain', marginBottom: 12 }}
+          />
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: '#1a1a1a', letterSpacing: '-0.5px' }}>
+            Uni<span style={{ color: '#F59E0B' }}>RH</span>
           </h1>
-          <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>
+          <p style={{ fontSize: 13, color: '#6B7280', marginTop: 4 }}>
             Gestão de Pessoas · Unisulma
           </p>
         </div>
 
-        <div className="card" style={{ padding: 28 }}>
-          <h2 style={{ fontSize: 16, fontWeight: 600, color: 'var(--gray-900)', marginBottom: 20 }}>
+        <div className="card" style={{ padding: 32, borderRadius: 16, boxShadow: '0 4px 24px rgba(245,158,11,.12)' }}>
+          <h2 style={{ fontSize: 16, fontWeight: 600, color: '#111827', marginBottom: 20 }}>
             Entrar na plataforma
           </h2>
 
@@ -92,7 +90,7 @@ export default function Login() {
                   onClick={() => setShowPass(s => !s)}
                   style={{
                     position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)',
-                    background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', padding: 4
+                    background: 'none', border: 'none', cursor: 'pointer', color: '#9CA3AF', padding: 4
                   }}
                 >
                   {showPass ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -108,16 +106,21 @@ export default function Login() {
 
             <button
               type="submit"
-              className="btn btn-primary"
               disabled={loading}
-              style={{ width: '100%', justifyContent: 'center', padding: '10px 0', fontSize: 14, marginTop: 4 }}
+              style={{
+                width: '100%', padding: '11px 0', fontSize: 14, fontWeight: 600,
+                background: 'linear-gradient(135deg, #F59E0B 0%, #D97706 100%)',
+                color: 'white', border: 'none', borderRadius: 8, cursor: 'pointer',
+                marginTop: 4, fontFamily: 'var(--font)',
+                opacity: loading ? .7 : 1, transition: 'opacity .15s'
+              }}
             >
               {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </form>
         </div>
 
-        <p style={{ textAlign: 'center', fontSize: 11, color: 'var(--gray-400)', marginTop: 20 }}>
+        <p style={{ textAlign: 'center', fontSize: 11, color: '#9CA3AF', marginTop: 20 }}>
           Acesso restrito · LGPD — Lei nº 13.709/2018
         </p>
       </div>

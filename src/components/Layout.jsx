@@ -43,13 +43,17 @@ export default function Layout() {
   return (
     <div className="layout">
       <aside className="sidebar no-print">
-        <div className="sidebar-brand">
-          <div className="brand-icon">
-            <GraduationCap size={18} color="white" />
-          </div>
+        <div className="sidebar-brand" style={{ gap: 10 }}>
+          <img
+            src="/logo-unisulma.png"
+            alt="Unisulma"
+            style={{ width: 36, height: 36, objectFit: 'contain', flexShrink: 0 }}
+          />
           <div>
-            <p className="brand-name">UniRH</p>
-            <span className="brand-sub">Gestão de Pessoas · Unisulma</span>
+            <p className="brand-name">
+              Uni<span style={{ color: '#F59E0B' }}>RH</span>
+            </p>
+            <span className="brand-sub">Gestão de Pessoas</span>
           </div>
         </div>
 
@@ -73,7 +77,7 @@ export default function Layout() {
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <div className="user-avatar">{initials}</div>
+            <div className="user-avatar" style={{ background: '#FEF3C7', color: '#D97706' }}>{initials}</div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <p className="user-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                 {user?.email || 'Usuário'}
