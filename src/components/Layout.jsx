@@ -48,8 +48,8 @@ export default function Layout() {
             <GraduationCap size={18} color="white" />
           </div>
           <div>
-            <p className="brand-name">EduHR Hub</p>
-            <span className="brand-sub">Gestão de RH</span>
+            <p className="brand-name">UniRH</p>
+            <span className="brand-sub">Gestão de Pessoas · Unisulma</span>
           </div>
         </div>
 
@@ -93,7 +93,7 @@ export default function Layout() {
 
       <div className="main">
         <header className="topbar no-print">
-          <span className="topbar-title">Folha de Pagamento — IES</span>
+          <span className="topbar-title">UniRH · Unisulma</span>
           <div className="topbar-secure">
             <span className="secure-dot" />
             Sessão segura · LGPD
@@ -105,7 +105,7 @@ export default function Layout() {
         </main>
 
         <footer className="page-footer no-print">
-          <p>Aviso LGPD — Uso restrito e confidencial conforme Lei nº 13.709/2018.</p>
+          <p>UniRH · Unisulma — Uso restrito e confidencial conforme Lei nº 13.709/2018 (LGPD).</p>
         </footer>
       </div>
     </div>

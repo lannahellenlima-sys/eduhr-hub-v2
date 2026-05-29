@@ -42,14 +42,18 @@ export default function Login() {
       <div style={{ width: '100%', maxWidth: 380 }}>
         <div style={{ textAlign: 'center', marginBottom: 32 }}>
           <div style={{
-            width: 52, height: 52, borderRadius: 14, background: 'var(--blue)',
+            width: 56, height: 56, borderRadius: 16, background: 'var(--blue)',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
-            margin: '0 auto 12px'
+            margin: '0 auto 14px'
           }}>
-            <GraduationCap size={26} color="white" />
+            <GraduationCap size={28} color="white" />
           </div>
-          <h1 style={{ fontSize: 22, fontWeight: 700, color: 'var(--gray-900)' }}>EduHR Hub</h1>
-          <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>Gestão de Recursos Humanos</p>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: 'var(--gray-900)', letterSpacing: '-0.5px' }}>
+            Uni<span style={{ color: 'var(--blue)' }}>RH</span>
+          </h1>
+          <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>
+            Gestão de Pessoas · Unisulma
+          </p>
         </div>
 
         <div className="card" style={{ padding: 28 }}>
@@ -63,7 +67,7 @@ export default function Login() {
               <input
                 className="form-input"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder="seu@unisulma.edu.br"
                 value={email}
                 onChange={e => setEmail(e.target.value)}
                 required
