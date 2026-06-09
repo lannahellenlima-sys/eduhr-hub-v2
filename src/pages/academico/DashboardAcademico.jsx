@@ -4,7 +4,7 @@ import {
   GraduationCap, BookOpen, DollarSign, AlertTriangle,
   TrendingUp, Users, Clock, ChevronRight, BarChart3
 } from 'lucide-react'
-import { supabase } from '../lib/supabase'
+import { supabase } from '../../lib/supabase'
 
 const fmt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0)
 const fmtH = (v) => `${(v || 0).toFixed(1)}h`
