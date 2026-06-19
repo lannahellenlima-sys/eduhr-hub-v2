@@ -63,6 +63,7 @@ export default function Layout() {
                   <NavLink to="/afastamentos" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><Clock size={12} /> Afastamentos e Licenças</NavLink>
                   <NavLink to="/rescisoes" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><UserMinus size={12} /> Rescisões</NavLink>
                   <NavLink to="/ferias" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><Calendar size={12} /> Calendário de Férias</NavLink>
+                  <NavLink to="/avaliacao-adm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><Star size={12} /> Avaliação de Desempenho</NavLink>
                 </div>
               )}
             </div>
