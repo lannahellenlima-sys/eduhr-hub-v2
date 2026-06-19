@@ -81,6 +81,7 @@ export default function Layout() {
                   <NavLink to="/academico/distribuicao" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><GraduationCap size={12} /> Distribuição de CH</NavLink>
                   <NavLink to="/academico/projecao" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><TrendingUp size={12} /> Projeção financeira</NavLink>
                   <NavLink to="/academico/avaliacao" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><Star size={12} /> Avaliação docente</NavLink>
+                  <NavLink to="/avaliacao-adm" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`} style={{ fontSize: 12 }}><Star size={12} /> Avaliação ADM</NavLink>
                 </div>
               )}
             </div>

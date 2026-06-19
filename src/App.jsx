@@ -20,6 +20,7 @@ import Historico from './pages/Historico'
 import Afastamentos from './pages/Afastamentos'
 import Rescisoes from './pages/Rescisoes'
 import AvaliacaoDocente from './pages/AvaliacaoDocente'
+import AvaliacaoColaborador from './pages/AvaliacaoColaborador'
 import GestaoUsuarios from './pages/GestaoUsuarios'
 // Módulo Acadêmico
 import DashboardAcademico from './pages/academico/DashboardAcademico'
@@ -64,6 +65,7 @@ export default function App() {
             <Route path="academico/distribuicao" element={<DistribuicaoSemestral />} />
             <Route path="academico/projecao" element={<ProjecaoFinanceira />} />
             <Route path="academico/avaliacao" element={<AvaliacaoDocente />} />
+              <Route path="avaliacao-adm" element={<AvaliacaoColaborador />} />
             {/* Administração */}
             <Route path="usuarios" element={<GestaoUsuarios />} />
           </Route>
