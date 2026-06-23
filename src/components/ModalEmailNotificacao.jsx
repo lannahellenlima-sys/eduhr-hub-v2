@@ -79,7 +79,7 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
                   </div>
 
                   <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6, marginBottom: 10 }}>
-                    Em caso de dúvidas, entre em contato com o RH pelo ramal <strong>220</strong> ou pelo e-mail <strong>rh@ies.edu.br</strong>.
+                    Em caso de dúvidas, entre em contato com o RH pelo e-mail <strong>rh@unisulma.edu.br</strong>.
                   </p>
                   <p style={{ fontSize: 13, color: 'var(--gray-700)' }}>
                     Atenciosamente,<br />

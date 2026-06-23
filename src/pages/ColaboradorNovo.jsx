@@ -1,10 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Save } from 'lucide-react'
 import { saveColaborador } from '../hooks/useColaboradores'
+import { supabase } from '../lib/supabase'
 
 const VINCULOS = ['CLT', 'CLT Horista', 'PJ', 'Estágio', 'Temporário', 'Autônomo']
-const REGIMES = ['Integral (40h)', 'Parcial (20h)', 'Horista', 'Outro']
+const REGIMES = ['44h semanais', 'Integral (40h)', 'Parcial (20h)', 'Horista', 'Outro']
 const ESTADOS_CIVIS = ['Solteiro(a)', 'Casado(a)', 'Divorciado(a)', 'Viúvo(a)', 'União estável']
 const TIPOS_SANGUINEOS = ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-']
 const GRAUS = ['Ensino Médio', 'Ensino Superior', 'Especialização', 'Pós-graduação', 'Mestrado', 'Doutorado']
@@ -26,6 +27,16 @@ export default function ColaboradorNovo() {
   })
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  // Gera número de ficha automático
+  useEffect(() => {
+    supabase.from('colaboradores').select('ficha_numero').order('created_at', { ascending: false }).limit(1)
+      .then(({ data }) => {
+        const ultimo = data?.[0]?.ficha_numero
+        const proximo = ultimo ? String(parseInt(ultimo.replace(/D/g, '') || 0) + 1).padStart(4, '0') : '0001'
+        set('ficha_numero', proximo)
+      })
+  }, [])
 
   async function handleSave() {
     if (!form.nome || !form.funcao || !form.departamento || !form.data_admissao) {
@@ -91,7 +102,7 @@ export default function ColaboradorNovo() {
               <input className="form-input" value={form.nome} onChange={e => set('nome', e.target.value)} placeholder="Nome completo" />
             </div>
             <div className="form-group">
-              <label className="form-label">Nº da ficha</label>
+              <label className="form-label">Nº da ficha <span style={{ fontSize: 10, color: "var(--gray-400)", fontWeight: 400 }}>(gerado automaticamente)</span></label>
               <input className="form-input" value={form.ficha_numero} onChange={e => set('ficha_numero', e.target.value)} placeholder="0001" />
             </div>
           </div>
