@@ -1,9 +1,7 @@
 import { useState } from 'react'
-import { X, Mail, CheckCircle, Edit2 } from 'lucide-react'
+import { X, Mail, CheckCircle, Edit2, ExternalLink } from 'lucide-react'
 
 export default function ModalEmailNotificacao({ colaborador, documentosPendentes, onClose }) {
-  const [enviado, setEnviado] = useState(false)
-  const [enviando, setEnviando] = useState(false)
   const [editandoAssunto, setEditandoAssunto] = useState(false)
   const [editandoCorpo, setEditandoCorpo] = useState(false)
 
@@ -15,19 +13,32 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
   const [assunto, setAssunto] = useState(assuntoInicial)
   const [corpo, setCorpo] = useState(corpoInicial)
 
-  async function handleEnviar() {
-    setEnviando(true)
-    await new Promise(r => setTimeout(r, 1200))
-    setEnviado(true)
-    setEnviando(false)
-  }
-
   function resetar() {
     setAssunto(assuntoInicial)
     setCorpo(corpoInicial)
     setEditandoAssunto(false)
     setEditandoCorpo(false)
   }
+
+  function handleEnviar() {
+    const listaDocumentos = documentosPendentes.map(d =>
+      `• ${d.tipo}${d.descricao ? ' — ' + d.descricao : ''}`
+    ).join('\n')
+
+    const bodyCompleto =
+      `Olá, ${primeiroNome},\n\n` +
+      `${corpo}\n\n` +
+      `Documentos pendentes:\n${listaDocumentos}\n\n` +
+      `Em caso de dúvidas, entre em contato com o RH pelo e-mail rh@unisulma.edu.br.\n\n` +
+      `Atenciosamente,\n` +
+      `Setor de Recursos Humanos — UNISULMA`
+
+    const mailto = `mailto:${colaborador?.email || ''}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(bodyCompleto)}`
+    window.open(mailto, '_blank')
+  }
+
+  const semEmail = !colaborador?.email
+  const semDocumentos = documentosPendentes.length === 0
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -40,134 +51,120 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
         </div>
 
         <div className="modal-body">
-          {enviado ? (
-            <div style={{ textAlign: 'center', padding: '24px 0' }}>
-              <CheckCircle size={48} color="var(--green)" style={{ marginBottom: 12 }} />
-              <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--gray-900)' }}>E-mail enviado!</p>
-              <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>
-                Notificação enviada para <strong>{colaborador?.email}</strong>
-              </p>
-            </div>
-          ) : (
-            <>
-              {/* Para */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, marginBottom: 8, padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7 }}>
-                <span style={{ color: 'var(--gray-500)', minWidth: 52, fontWeight: 500 }}>Para:</span>
-                <span style={{ color: 'var(--gray-900)', fontWeight: 600 }}>{colaborador?.email || 'E-mail não cadastrado'}</span>
-              </div>
 
-              {/* Assunto editável */}
+          {/* Aviso se sem e-mail */}
+          {semEmail && (
+            <div className="alert alert-amber" style={{ marginBottom: 12 }}>
+              <span>Este colaborador não tem e-mail cadastrado. Cadastre um e-mail na ficha antes de enviar.</span>
+            </div>
+          )}
+
+          {/* Para */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, marginBottom: 8, padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7 }}>
+            <span style={{ color: 'var(--gray-500)', minWidth: 52, fontWeight: 500 }}>Para:</span>
+            <span style={{ color: semEmail ? 'var(--red)' : 'var(--gray-900)', fontWeight: 600 }}>
+              {colaborador?.email || 'Sem e-mail cadastrado'}
+            </span>
+          </div>
+
+          {/* Assunto editável */}
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Assunto</span>
+              <button onClick={() => setEditandoAssunto(e => !e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                <Edit2 size={11} /> {editandoAssunto ? 'Fechar' : 'Editar'}
+              </button>
+            </div>
+            {editandoAssunto ? (
+              <input className="form-input" value={assunto} onChange={e => setAssunto(e.target.value)} autoFocus />
+            ) : (
+              <div style={{ padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7, fontSize: 13, color: 'var(--gray-800)', border: '1px solid var(--gray-200)' }}>
+                {assunto}
+              </div>
+            )}
+          </div>
+
+          {/* Preview */}
+          <div style={{ border: '1px solid var(--gray-200)', borderRadius: 8, overflow: 'hidden' }}>
+            <div style={{ background: 'var(--blue)', padding: '14px 24px', textAlign: 'center' }}>
+              <p style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>UniRH</p>
+              <p style={{ color: 'rgba(255,255,255,.7)', fontSize: 12, marginTop: 2 }}>UNISULMA · Gestão de Recursos Humanos</p>
+            </div>
+
+            <div style={{ padding: '20px 24px', background: 'white' }}>
+              <p style={{ fontSize: 14, color: 'var(--gray-900)', marginBottom: 12 }}>
+                Olá, <strong>{primeiroNome}</strong>,
+              </p>
+
+              {/* Corpo editável */}
               <div style={{ marginBottom: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Assunto</span>
-                  <button
-                    onClick={() => setEditandoAssunto(e => !e)}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}
-                  >
-                    <Edit2 size={11} /> {editandoAssunto ? 'Fechar' : 'Editar'}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: 4 }}>
+                  <button onClick={() => setEditandoCorpo(e => !e)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <Edit2 size={11} /> {editandoCorpo ? 'Fechar' : 'Editar texto'}
                   </button>
                 </div>
-                {editandoAssunto ? (
-                  <input
-                    className="form-input"
-                    value={assunto}
-                    onChange={e => setAssunto(e.target.value)}
-                    autoFocus
-                  />
+                {editandoCorpo ? (
+                  <textarea className="form-textarea" value={corpo} onChange={e => setCorpo(e.target.value)} rows={4} autoFocus />
                 ) : (
-                  <div style={{ padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7, fontSize: 13, color: 'var(--gray-800)', border: '1px solid var(--gray-200)' }}>
-                    {assunto}
-                  </div>
+                  <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6 }}>{corpo}</p>
                 )}
               </div>
 
-              {/* Preview do e-mail */}
-              <div style={{ border: '1px solid var(--gray-200)', borderRadius: 8, overflow: 'hidden' }}>
-                {/* Header */}
-                <div style={{ background: 'var(--blue)', padding: '16px 24px', textAlign: 'center' }}>
-                  <p style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>UniRH</p>
-                  <p style={{ color: 'rgba(255,255,255,.7)', fontSize: 12, marginTop: 2 }}>UNISULMA · Gestão de Recursos Humanos</p>
-                </div>
-
-                {/* Corpo */}
-                <div style={{ padding: '20px 24px', background: 'white' }}>
-                  <p style={{ fontSize: 14, color: 'var(--gray-900)', marginBottom: 12 }}>
-                    Olá, <strong>{primeiroNome}</strong>,
-                  </p>
-
-                  {/* Texto editável */}
-                  <div style={{ marginBottom: 12 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 4 }}>
-                      <button
-                        onClick={() => setEditandoCorpo(e => !e)}
-                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}
-                      >
-                        <Edit2 size={11} /> {editandoCorpo ? 'Fechar' : 'Editar texto'}
-                      </button>
+              {/* Documentos */}
+              <div style={{ background: 'var(--gray-50)', borderRadius: 7, padding: '10px 14px', marginBottom: 14 }}>
+                {semDocumentos ? (
+                  <p style={{ fontSize: 13, color: 'var(--gray-500)' }}>Nenhum documento pendente.</p>
+                ) : (
+                  documentosPendentes.map(doc => (
+                    <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--gray-800)', padding: '4px 0', borderBottom: '1px solid var(--gray-200)' }}>
+                      <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--red)', flexShrink: 0, display: 'inline-block' }} />
+                      <span style={{ fontWeight: 500 }}>{doc.tipo}</span>
+                      {doc.descricao && <span style={{ color: 'var(--gray-400)', fontSize: 12 }}>— {doc.descricao}</span>}
                     </div>
-                    {editandoCorpo ? (
-                      <textarea
-                        className="form-textarea"
-                        value={corpo}
-                        onChange={e => setCorpo(e.target.value)}
-                        rows={4}
-                        autoFocus
-                      />
-                    ) : (
-                      <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6 }}>{corpo}</p>
-                    )}
-                  </div>
-
-                  {/* Lista de documentos */}
-                  <div style={{ background: 'var(--gray-50)', borderRadius: 7, padding: '10px 14px', marginBottom: 14 }}>
-                    {documentosPendentes.length === 0 ? (
-                      <p style={{ fontSize: 13, color: 'var(--gray-500)' }}>Nenhum documento pendente.</p>
-                    ) : (
-                      documentosPendentes.map(doc => (
-                        <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--gray-800)', padding: '4px 0', borderBottom: '1px solid var(--gray-200)' }}>
-                          <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--red)', flexShrink: 0, display: 'inline-block' }} />
-                          <span style={{ fontWeight: 500 }}>{doc.tipo}</span>
-                          {doc.descricao && <span style={{ color: 'var(--gray-400)', fontSize: 12 }}>— {doc.descricao}</span>}
-                        </div>
-                      ))
-                    )}
-                  </div>
-
-                  <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6, marginBottom: 10 }}>
-                    Em caso de dúvidas, entre em contato com o RH pelo e-mail <strong>rh@unisulma.edu.br</strong>.
-                  </p>
-                  <p style={{ fontSize: 13, color: 'var(--gray-700)' }}>
-                    Atenciosamente,<br />
-                    <strong>Setor de Recursos Humanos — UNISULMA</strong>
-                  </p>
-                </div>
-
-                {/* Rodapé */}
-                <div style={{ background: 'var(--gray-50)', padding: '10px 24px', borderTop: '1px solid var(--gray-200)' }}>
-                  <p style={{ fontSize: 11, color: 'var(--gray-400)', lineHeight: 1.5 }}>
-                    Este é um e-mail automático enviado pelo sistema UniRH. Suas informações são tratadas de forma confidencial conforme a Lei nº 13.709/2018 (LGPD).
-                  </p>
-                </div>
+                  ))
+                )}
               </div>
 
-              {/* Botão restaurar padrão */}
-              {(assunto !== assuntoInicial || corpo !== corpoInicial) && (
-                <button onClick={resetar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', fontSize: 12, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
-                  ↺ Restaurar texto padrão
-                </button>
-              )}
-            </>
+              <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6, marginBottom: 10 }}>
+                Em caso de dúvidas, entre em contato com o RH pelo e-mail <strong>rh@unisulma.edu.br</strong>.
+              </p>
+              <p style={{ fontSize: 13, color: 'var(--gray-700)' }}>
+                Atenciosamente,<br />
+                <strong>Setor de Recursos Humanos — UNISULMA</strong>
+              </p>
+            </div>
+
+            <div style={{ background: 'var(--gray-50)', padding: '10px 24px', borderTop: '1px solid var(--gray-200)' }}>
+              <p style={{ fontSize: 11, color: 'var(--gray-400)', lineHeight: 1.5 }}>
+                Este e-mail é enviado pelo sistema UniRH. Informações tratadas de forma confidencial conforme Lei nº 13.709/2018 (LGPD).
+              </p>
+            </div>
+          </div>
+
+          {/* Restaurar padrão */}
+          {(assunto !== assuntoInicial || corpo !== corpoInicial) && (
+            <button onClick={resetar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', fontSize: 12, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+              ↺ Restaurar texto padrão
+            </button>
           )}
+
+          {/* Instrução */}
+          <div style={{ marginTop: 12, padding: '10px 14px', background: 'var(--blue-light)', borderRadius: 8, fontSize: 12, color: 'var(--blue)', display: 'flex', gap: 8, alignItems: 'flex-start' }}>
+            <ExternalLink size={13} style={{ marginTop: 1, flexShrink: 0 }} />
+            <span>Ao clicar em "Abrir no e-mail", o Outlook ou Gmail abrirá com a mensagem pronta. Basta clicar em Enviar.</span>
+          </div>
         </div>
 
         <div className="modal-footer">
-          <button className="btn" onClick={onClose}>{enviado ? 'Fechar' : 'Cancelar'}</button>
-          {!enviado && (
-            <button className="btn btn-primary" onClick={handleEnviar} disabled={enviando || documentosPendentes.length === 0 || !colaborador?.email}>
-              <Mail size={13} />
-              {enviando ? 'Enviando...' : 'Enviar e-mail'}
-            </button>
-          )}
+          <button className="btn" onClick={onClose}>Cancelar</button>
+          <button
+            className="btn btn-primary"
+            onClick={handleEnviar}
+            disabled={semEmail || semDocumentos}
+            title={semEmail ? 'Colaborador sem e-mail cadastrado' : semDocumentos ? 'Nenhum documento pendente' : ''}
+          >
+            <Mail size={13} /> Abrir no e-mail
+          </button>
         </div>
       </div>
     </div>
