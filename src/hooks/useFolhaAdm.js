@@ -299,10 +299,10 @@ export async function duplicarFolha(folhaOrigemId, mesDestino, anoDestino) {
   }
 
   // 6. Copia Vale-Alimentação
-  const { data: vale } = await supabase.from('lancamentos_vale_alimentacao').select('*').eq('folha_id', folhaOrigemId)
+  const { data: vale } = await supabase.from('lancamentos_vale_alim').select('*').eq('folha_id', folhaOrigemId)
   if (vale?.length) {
     const novoVale = vale.map(({ id, created_at, updated_at, ...l }) => ({ ...l, folha_id: novaId, status: 'rascunho' }))
-    await supabase.from('lancamentos_vale_alimentacao').insert(novoVale)
+    await supabase.from('lancamentos_vale_alim').insert(novoVale)
   }
 
   toast.success(`Folha ${mesDestino}/${anoDestino} criada com os lançamentos do mês anterior!`)
@@ -316,7 +316,7 @@ export async function validarFolhaCompleta(folhaId) {
     'lancamentos_gratificacoes',
     'lancamentos_coordenadores',
     'lancamentos_socios',
-    'lancamentos_vale_alimentacao',
+    'lancamentos_vale_alim',
   ]
   for (const tabela of tabelas) {
     const { error } = await supabase
