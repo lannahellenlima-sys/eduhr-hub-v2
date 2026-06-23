@@ -1,11 +1,20 @@
 import { useState } from 'react'
-import { X, Mail, CheckCircle } from 'lucide-react'
+import { X, Mail, CheckCircle, Edit2 } from 'lucide-react'
 
 export default function ModalEmailNotificacao({ colaborador, documentosPendentes, onClose }) {
   const [enviado, setEnviado] = useState(false)
   const [enviando, setEnviando] = useState(false)
+  const [editandoAssunto, setEditandoAssunto] = useState(false)
+  const [editandoCorpo, setEditandoCorpo] = useState(false)
 
-  // Em produção: integrar com Supabase Edge Functions + Resend/SendGrid
+  const primeiroNome = colaborador?.nome?.split(' ')[0] || 'Colaborador'
+
+  const assuntoInicial = 'UniRH — Documentos pendentes no seu cadastro'
+  const corpoInicial = `Identificamos que os documentos abaixo ainda estão pendentes no seu cadastro funcional. Pedimos que entregue ao setor de RH o mais breve possível para manter seu cadastro regularizado.`
+
+  const [assunto, setAssunto] = useState(assuntoInicial)
+  const [corpo, setCorpo] = useState(corpoInicial)
+
   async function handleEnviar() {
     setEnviando(true)
     await new Promise(r => setTimeout(r, 1200))
@@ -13,11 +22,16 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
     setEnviando(false)
   }
 
-  const primeiroNome = colaborador?.nome?.split(' ')[0] || 'Colaborador'
+  function resetar() {
+    setAssunto(assuntoInicial)
+    setCorpo(corpoInicial)
+    setEditandoAssunto(false)
+    setEditandoCorpo(false)
+  }
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal" style={{ maxWidth: 560 }} onClick={e => e.stopPropagation()}>
+      <div className="modal" style={{ maxWidth: 580 }} onClick={e => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Notificação por e-mail</h2>
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)' }}>
@@ -27,7 +41,7 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
 
         <div className="modal-body">
           {enviado ? (
-            <div style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div style={{ textAlign: 'center', padding: '24px 0' }}>
               <CheckCircle size={48} color="var(--green)" style={{ marginBottom: 12 }} />
               <p style={{ fontSize: 15, fontWeight: 600, color: 'var(--gray-900)' }}>E-mail enviado!</p>
               <p style={{ fontSize: 13, color: 'var(--gray-500)', marginTop: 4 }}>
@@ -36,40 +50,81 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
             </div>
           ) : (
             <>
-              <div style={{ display: 'flex', gap: 10, fontSize: 13, marginBottom: 4 }}>
-                <span style={{ color: 'var(--gray-500)', minWidth: 40 }}>Para:</span>
-                <span style={{ color: 'var(--gray-900)', fontWeight: 500 }}>{colaborador?.email}</span>
+              {/* Para */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, marginBottom: 8, padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7 }}>
+                <span style={{ color: 'var(--gray-500)', minWidth: 52, fontWeight: 500 }}>Para:</span>
+                <span style={{ color: 'var(--gray-900)', fontWeight: 600 }}>{colaborador?.email || 'E-mail não cadastrado'}</span>
               </div>
-              <div style={{ display: 'flex', gap: 10, fontSize: 13, marginBottom: 16 }}>
-                <span style={{ color: 'var(--gray-500)', minWidth: 40 }}>Assunto:</span>
-                <span style={{ color: 'var(--gray-900)' }}>EduHR Hub — Documentos pendentes no seu cadastro</span>
+
+              {/* Assunto editável */}
+              <div style={{ marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--gray-500)', textTransform: 'uppercase', letterSpacing: '.04em' }}>Assunto</span>
+                  <button
+                    onClick={() => setEditandoAssunto(e => !e)}
+                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}
+                  >
+                    <Edit2 size={11} /> {editandoAssunto ? 'Fechar' : 'Editar'}
+                  </button>
+                </div>
+                {editandoAssunto ? (
+                  <input
+                    className="form-input"
+                    value={assunto}
+                    onChange={e => setAssunto(e.target.value)}
+                    autoFocus
+                  />
+                ) : (
+                  <div style={{ padding: '8px 10px', background: 'var(--gray-50)', borderRadius: 7, fontSize: 13, color: 'var(--gray-800)', border: '1px solid var(--gray-200)' }}>
+                    {assunto}
+                  </div>
+                )}
               </div>
 
               {/* Preview do e-mail */}
               <div style={{ border: '1px solid var(--gray-200)', borderRadius: 8, overflow: 'hidden' }}>
-                <div style={{ background: 'var(--blue)', padding: '20px 24px', textAlign: 'center' }}>
-                  <p style={{ color: 'white', fontWeight: 600, fontSize: 15 }}>EduHR Hub</p>
-                  <p style={{ color: 'rgba(255,255,255,.7)', fontSize: 12, marginTop: 2 }}>Gestão de Recursos Humanos</p>
+                {/* Header */}
+                <div style={{ background: 'var(--blue)', padding: '16px 24px', textAlign: 'center' }}>
+                  <p style={{ color: 'white', fontWeight: 700, fontSize: 15 }}>UniRH</p>
+                  <p style={{ color: 'rgba(255,255,255,.7)', fontSize: 12, marginTop: 2 }}>UNISULMA · Gestão de Recursos Humanos</p>
                 </div>
+
+                {/* Corpo */}
                 <div style={{ padding: '20px 24px', background: 'white' }}>
-                  <p style={{ fontSize: 14, color: 'var(--gray-900)', marginBottom: 10 }}>
+                  <p style={{ fontSize: 14, color: 'var(--gray-900)', marginBottom: 12 }}>
                     Olá, <strong>{primeiroNome}</strong>,
                   </p>
-                  <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6, marginBottom: 12 }}>
-                    Identificamos que os documentos abaixo ainda estão <strong>pendentes</strong> no seu cadastro funcional.
-                    Pedimos que entregue ao setor de RH o mais breve possível para manter seu cadastro regularizado.
-                  </p>
 
-                  <div style={{ background: 'var(--gray-50)', borderRadius: 7, padding: '10px 14px', marginBottom: 12 }}>
+                  {/* Texto editável */}
+                  <div style={{ marginBottom: 12 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', marginBottom: 4 }}>
+                      <button
+                        onClick={() => setEditandoCorpo(e => !e)}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--blue)', fontSize: 12, display: 'flex', alignItems: 'center', gap: 4 }}
+                      >
+                        <Edit2 size={11} /> {editandoCorpo ? 'Fechar' : 'Editar texto'}
+                      </button>
+                    </div>
+                    {editandoCorpo ? (
+                      <textarea
+                        className="form-textarea"
+                        value={corpo}
+                        onChange={e => setCorpo(e.target.value)}
+                        rows={4}
+                        autoFocus
+                      />
+                    ) : (
+                      <p style={{ fontSize: 13, color: 'var(--gray-700)', lineHeight: 1.6 }}>{corpo}</p>
+                    )}
+                  </div>
+
+                  {/* Lista de documentos */}
+                  <div style={{ background: 'var(--gray-50)', borderRadius: 7, padding: '10px 14px', marginBottom: 14 }}>
                     {documentosPendentes.length === 0 ? (
                       <p style={{ fontSize: 13, color: 'var(--gray-500)' }}>Nenhum documento pendente.</p>
                     ) : (
                       documentosPendentes.map(doc => (
-                        <div key={doc.id} style={{
-                          display: 'flex', alignItems: 'center', gap: 8,
-                          fontSize: 13, color: 'var(--gray-800)', padding: '4px 0',
-                          borderBottom: '1px solid var(--gray-200)'
-                        }}>
+                        <div key={doc.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, color: 'var(--gray-800)', padding: '4px 0', borderBottom: '1px solid var(--gray-200)' }}>
                           <span style={{ width: 7, height: 7, borderRadius: '50%', background: 'var(--red)', flexShrink: 0, display: 'inline-block' }} />
                           <span style={{ fontWeight: 500 }}>{doc.tipo}</span>
                           {doc.descricao && <span style={{ color: 'var(--gray-400)', fontSize: 12 }}>— {doc.descricao}</span>}
@@ -83,16 +138,24 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
                   </p>
                   <p style={{ fontSize: 13, color: 'var(--gray-700)' }}>
                     Atenciosamente,<br />
-                    <strong>Setor de Recursos Humanos</strong>
+                    <strong>Setor de Recursos Humanos — UNISULMA</strong>
                   </p>
                 </div>
+
+                {/* Rodapé */}
                 <div style={{ background: 'var(--gray-50)', padding: '10px 24px', borderTop: '1px solid var(--gray-200)' }}>
                   <p style={{ fontSize: 11, color: 'var(--gray-400)', lineHeight: 1.5 }}>
-                    Este é um e-mail automático enviado pelo sistema EduHR Hub. Suas informações são tratadas de forma
-                    confidencial conforme a Lei nº 13.709/2018 (LGPD).
+                    Este é um e-mail automático enviado pelo sistema UniRH. Suas informações são tratadas de forma confidencial conforme a Lei nº 13.709/2018 (LGPD).
                   </p>
                 </div>
               </div>
+
+              {/* Botão restaurar padrão */}
+              {(assunto !== assuntoInicial || corpo !== corpoInicial) && (
+                <button onClick={resetar} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--gray-400)', fontSize: 12, marginTop: 8, display: 'flex', alignItems: 'center', gap: 4 }}>
+                  ↺ Restaurar texto padrão
+                </button>
+              )}
             </>
           )}
         </div>
@@ -100,7 +163,7 @@ export default function ModalEmailNotificacao({ colaborador, documentosPendentes
         <div className="modal-footer">
           <button className="btn" onClick={onClose}>{enviado ? 'Fechar' : 'Cancelar'}</button>
           {!enviado && (
-            <button className="btn btn-primary" onClick={handleEnviar} disabled={enviando || documentosPendentes.length === 0}>
+            <button className="btn btn-primary" onClick={handleEnviar} disabled={enviando || documentosPendentes.length === 0 || !colaborador?.email}>
               <Mail size={13} />
               {enviando ? 'Enviando...' : 'Enviar e-mail'}
             </button>
