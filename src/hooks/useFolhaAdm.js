@@ -251,3 +251,81 @@ export function exportarCSV(dados, nomeArquivo) {
   URL.revokeObjectURL(url)
   toast.success('Exportado!')
 }
+
+// ── Duplicar competência anterior ───────────────────────────────────
+export async function duplicarFolha(folhaOrigemId, mesDestino, anoDestino) {
+  // 1. Cria a nova folha
+  const { data: novaFolha, error: errFolha } = await supabase
+    .from('folhas_mensais')
+    .insert({ mes: mesDestino, ano: anoDestino, tipo: 'administrativo', status: 'aberta' })
+    .select('id').single()
+  if (errFolha) { toast.error('Erro ao criar folha'); return null }
+  const novaId = novaFolha.id
+
+  // 2. Copia lançamentos CLT — zera descontos variáveis (farmácia, adiantamento)
+  const { data: clt } = await supabase.from('lancamentos_adm_clt').select('*').eq('folha_id', folhaOrigemId)
+  if (clt?.length) {
+    const novoClt = clt.map(({ id, created_at, updated_at, ...l }) => ({
+      ...l,
+      folha_id: novaId,
+      dias_trabalhados: 30,
+      farmacia: 0,
+      adiantamento: 0,
+      observacoes: null,
+      status: 'rascunho',
+    }))
+    await supabase.from('lancamentos_adm_clt').insert(novoClt)
+  }
+
+  // 3. Copia Gratificações
+  const { data: grat } = await supabase.from('lancamentos_gratificacoes').select('*').eq('folha_id', folhaOrigemId)
+  if (grat?.length) {
+    const novoGrat = grat.map(({ id, created_at, updated_at, ...l }) => ({ ...l, folha_id: novaId, status: 'rascunho' }))
+    await supabase.from('lancamentos_gratificacoes').insert(novoGrat)
+  }
+
+  // 4. Copia Coordenadores
+  const { data: coord } = await supabase.from('lancamentos_coordenadores').select('*').eq('folha_id', folhaOrigemId)
+  if (coord?.length) {
+    const novoCoord = coord.map(({ id, created_at, updated_at, ...l }) => ({ ...l, folha_id: novaId, status: 'rascunho' }))
+    await supabase.from('lancamentos_coordenadores').insert(novoCoord)
+  }
+
+  // 5. Copia Sócios
+  const { data: socios } = await supabase.from('lancamentos_socios').select('*').eq('folha_id', folhaOrigemId)
+  if (socios?.length) {
+    const novoSocios = socios.map(({ id, created_at, updated_at, ...l }) => ({ ...l, folha_id: novaId, farmacia: 0, adiantamento: 0, status: 'rascunho' }))
+    await supabase.from('lancamentos_socios').insert(novoSocios)
+  }
+
+  // 6. Copia Vale-Alimentação
+  const { data: vale } = await supabase.from('lancamentos_vale_alimentacao').select('*').eq('folha_id', folhaOrigemId)
+  if (vale?.length) {
+    const novoVale = vale.map(({ id, created_at, updated_at, ...l }) => ({ ...l, folha_id: novaId, status: 'rascunho' }))
+    await supabase.from('lancamentos_vale_alimentacao').insert(novoVale)
+  }
+
+  toast.success(`Folha ${mesDestino}/${anoDestino} criada com os lançamentos do mês anterior!`)
+  return novaId
+}
+
+// ── Validar folha inteira (todos os lançamentos de uma vez) ──────────
+export async function validarFolhaCompleta(folhaId) {
+  const tabelas = [
+    'lancamentos_adm_clt',
+    'lancamentos_gratificacoes',
+    'lancamentos_coordenadores',
+    'lancamentos_socios',
+    'lancamentos_vale_alimentacao',
+  ]
+  for (const tabela of tabelas) {
+    const { error } = await supabase
+      .from(tabela)
+      .update({ status: 'validado', updated_at: new Date().toISOString() })
+      .eq('folha_id', folhaId)
+      .eq('status', 'rascunho')
+    if (error) { toast.error(`Erro ao validar ${tabela}`); return false }
+  }
+  toast.success('Todos os lançamentos foram validados!')
+  return true
+}

@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChevronLeft, ChevronRight, Plus, Save, Trash2,
+  ChevronLeft, ChevronRight, Plus, Save, Trash2, Copy, CheckSquare,
   Download, Lock, Unlock, CheckCircle, AlertCircle, Send
 } from 'lucide-react'
 import {
@@ -9,7 +9,7 @@ import {
   useLancamentosCoordenadores, useLancamentosSocios, useLancamentosValeAlim,
   saveLancamentoCLT, saveLancamentoGratificacao, saveLancamentoCoordenador,
   saveLancamentoSocio, saveLancamentoValeAlim,
-  deleteLancamento, atualizarStatusFolha, criarFolha,
+  deleteLancamento, atualizarStatusFolha, criarFolha, duplicarFolha, validarFolhaCompleta,
   calcLiquidoCLT, calcTotalGratificacao, calcTotalCoordenador, calcTotalSocio,
   exportarCSV
 } from '../hooks/useFolhaAdm'
@@ -46,7 +46,12 @@ export default function FolhaAdministrativo() {
   const isFechada = folhaAtual?.status === 'fechada' || folhaAtual?.status === 'enviada_financeiro'
 
   async function handleFechar() {
-    if (pendentes > 0) { toast.error(`Há ${pendentes} lançamento(s) em rascunho. Valide todos antes de fechar.`); return }
+    // Valida automaticamente ao fechar se ainda houver rascunhos
+    if (pendentes > 0) {
+      const confirma = window.confirm(`Há ${pendentes} lançamento(s) em rascunho. Deseja validar todos e fechar a folha?`)
+      if (!confirma) return
+      await validarFolhaCompleta(folhaId)
+    }
     if (!confirm('Confirma o fechamento desta folha? Após fechar, os lançamentos não poderão ser editados.')) return
     const ok = await atualizarStatusFolha(folhaId, 'fechada', 'Lanna Hellen')
     if (ok) refetchFolhas()
@@ -56,6 +61,22 @@ export default function FolhaAdministrativo() {
     if (!confirm('Deseja reabrir esta folha?')) return
     const ok = await atualizarStatusFolha(folhaId, 'aberta')
     if (ok) refetchFolhas()
+  }
+
+  async function handleDuplicar() {
+    if (!folhaAtual) return
+    if (!confirm(`Duplicar a folha de ${MESES[folhaAtual.mes - 1]}/${folhaAtual.ano} para o próximo mês? Os lançamentos serão copiados e descontos variáveis (farmácia, adiantamento) zerados.`)) return
+    const mesDestino = (folhaAtual.mes % 12) + 1
+    const anoDestino = mesDestino === 1 ? folhaAtual.ano + 1 : folhaAtual.ano
+    const id = await duplicarFolha(folhaAtual.id, mesDestino, anoDestino)
+    if (id) { await refetchFolhas(); setFolhaIdx(0) }
+  }
+
+  async function handleValidarTodos() {
+    if (!folhaId) return
+    if (!confirm('Validar todos os lançamentos em rascunho desta folha de uma vez?')) return
+    const ok = await validarFolhaCompleta(folhaId)
+    if (ok) { refetchCLT(); refetchGrat(); refetchCoord(); refetchSocios(); refetchVale() }
   }
 
   async function handleEnviarFinanceiro() {
@@ -101,6 +122,16 @@ export default function FolhaAdministrativo() {
             </>
           )}
           <button className="btn" onClick={exportar}><Download size={13} /> Exportar CSV</button>
+          {folhaAtual && !isFechada && pendentes > 0 && (
+            <button className="btn" style={{ color: "var(--green)", borderColor: "#A8D575", background: "var(--green-light)" }} onClick={handleValidarTodos}>
+              <CheckSquare size={13} /> Validar todos
+            </button>
+          )}
+          {folhaAtual && (
+            <button className="btn" onClick={handleDuplicar}>
+              <Copy size={13} /> Duplicar mês anterior
+            </button>
+          )}
           <button className="btn btn-primary" onClick={async () => {
             const mes = (folhaAtual?.mes % 12) + 1
             const ano = mes === 1 ? (folhaAtual?.ano || new Date().getFullYear()) + 1 : (folhaAtual?.ano || new Date().getFullYear())
