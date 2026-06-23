@@ -329,3 +329,116 @@ export async function validarFolhaCompleta(folhaId) {
   toast.success('Todos os lançamentos foram validados!')
   return true
 }
+
+// ── Importar colaboradores ativos para a folha ───────────────────────
+export async function importarColaboradoresParaFolha(folhaId) {
+  // Busca todos os colaboradores ativos
+  const { data: colaboradores, error: errColab } = await supabase
+    .from('colaboradores')
+    .select('id, nome, funcao, departamento, vinculo, salario_base')
+    .eq('ativo', true)
+    .order('nome')
+
+  if (errColab || !colaboradores?.length) {
+    toast.error('Nenhum colaborador ativo encontrado.')
+    return 0
+  }
+
+  // Busca quem já está na folha
+  const { data: jaExistentes } = await supabase
+    .from('lancamentos_adm_clt')
+    .select('colaborador_nome')
+    .eq('folha_id', folhaId)
+
+  const nomesExistentes = new Set((jaExistentes || []).map(l => l.colaborador_nome))
+
+  // Filtra os que ainda não estão
+  const novos = colaboradores.filter(c => !nomesExistentes.has(c.nome))
+
+  if (!novos.length) {
+    toast('Todos os colaboradores já estão na folha!', { icon: 'ℹ️' })
+    return 0
+  }
+
+  // Cria lançamentos com salário base e valores zerados
+  const lancamentos = novos.map(c => ({
+    folha_id: folhaId,
+    colaborador_nome: c.nome,
+    funcao: c.funcao || '',
+    departamento: c.departamento || '',
+    vinculo: c.vinculo || 'CLT',
+    salario_bruto: c.salario_base || 0,
+    reajuste_pct: 0,
+    dias_trabalhados: 30,
+    ajuda_custo: 0,
+    vale_refeicao: 0,
+    gratificacao: 0,
+    ats: 0,
+    farmacia: 0,
+    adiantamento: 0,
+    plano_saude: 0,
+    status: 'rascunho',
+  }))
+
+  const { error } = await supabase.from('lancamentos_adm_clt').insert(lancamentos)
+  if (error) { toast.error('Erro ao importar colaboradores'); return 0 }
+
+  toast.success(`${novos.length} colaborador(es) importado(s) para a folha!`)
+  return novos.length
+}
+
+// ── Adicionar um único colaborador à folha aberta atual ──────────────
+export async function adicionarColaboradorAFolhaAtual(colaborador) {
+  // Busca a folha administrativa aberta mais recente
+  const { data: folhas } = await supabase
+    .from('folhas_mensais')
+    .select('id, mes, ano')
+    .eq('tipo', 'administrativo')
+    .eq('status', 'aberta')
+    .order('ano', { ascending: false })
+    .order('mes', { ascending: false })
+    .limit(1)
+
+  if (!folhas?.length) {
+    toast.error('Nenhuma folha administrativa aberta encontrada.')
+    return false
+  }
+
+  const folha = folhas[0]
+
+  // Verifica se já existe
+  const { data: existe } = await supabase
+    .from('lancamentos_adm_clt')
+    .select('id')
+    .eq('folha_id', folha.id)
+    .eq('colaborador_nome', colaborador.nome)
+    .limit(1)
+
+  if (existe?.length) {
+    toast(`${colaborador.nome} já está na folha de ${folha.mes}/${folha.ano}.`, { icon: 'ℹ️' })
+    return false
+  }
+
+  const { error } = await supabase.from('lancamentos_adm_clt').insert({
+    folha_id: folha.id,
+    colaborador_nome: colaborador.nome,
+    funcao: colaborador.funcao || '',
+    departamento: colaborador.departamento || '',
+    vinculo: colaborador.vinculo || 'CLT',
+    salario_bruto: colaborador.salario_base || 0,
+    reajuste_pct: 0,
+    dias_trabalhados: 30,
+    ajuda_custo: 0,
+    vale_refeicao: 0,
+    gratificacao: 0,
+    ats: 0,
+    farmacia: 0,
+    adiantamento: 0,
+    plano_saude: 0,
+    status: 'rascunho',
+  })
+
+  if (error) { toast.error('Erro ao adicionar à folha.'); return false }
+  toast.success(`${colaborador.nome} adicionado à folha de ${folha.mes}/${folha.ano}!`)
+  return true
+}

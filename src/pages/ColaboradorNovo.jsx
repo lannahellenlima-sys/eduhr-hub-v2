@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ChevronLeft, Save } from 'lucide-react'
 import { saveColaborador } from '../hooks/useColaboradores'
 import { supabase } from '../lib/supabase'
+import { adicionarColaboradorAFolhaAtual } from '../hooks/useFolhaAdm'
 
 const VINCULOS = ['CLT', 'CLT Horista', 'PJ', 'Estágio', 'Temporário', 'Autônomo']
 const REGIMES = ['44h semanais', 'Integral (40h)', 'Parcial (20h)', 'Horista', 'Outro']
@@ -73,7 +74,21 @@ export default function ColaboradorNovo() {
     }
     const newId = await saveColaborador(payload)
     setSaving(false)
-    if (newId) navigate(`/colaboradores/${newId}`)
+    if (newId) {
+      const adicionarFolha = window.confirm(
+        `Colaborador salvo com sucesso!\n\nDeseja adicionar ${form.nome} à folha de pagamento do mês atual?`
+      )
+      if (adicionarFolha) {
+        await adicionarColaboradorAFolhaAtual({
+          nome: form.nome,
+          funcao: form.funcao,
+          departamento: form.departamento,
+          vinculo: form.vinculo,
+          salario_base: parseFloat(form.salario_base) || 0,
+        })
+      }
+      navigate(`/colaboradores/${newId}`)
+    }
   }
 
   return (

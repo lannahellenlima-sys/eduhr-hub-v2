@@ -1,7 +1,7 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import {
-  ChevronLeft, ChevronRight, Plus, Save, Trash2, Copy, CheckSquare,
+  ChevronLeft, ChevronRight, Plus, Save, Trash2, Copy, CheckSquare, Users,
   Download, Lock, Unlock, CheckCircle, AlertCircle, Send
 } from 'lucide-react'
 import {
@@ -10,6 +10,7 @@ import {
   saveLancamentoCLT, saveLancamentoGratificacao, saveLancamentoCoordenador,
   saveLancamentoSocio, saveLancamentoValeAlim,
   deleteLancamento, atualizarStatusFolha, criarFolha, duplicarFolha, validarFolhaCompleta,
+  importarColaboradoresParaFolha,
   calcLiquidoCLT, calcTotalGratificacao, calcTotalCoordenador, calcTotalSocio,
   exportarCSV
 } from '../hooks/useFolhaAdm'
@@ -122,6 +123,15 @@ export default function FolhaAdministrativo() {
             </>
           )}
           <button className="btn" onClick={exportar}><Download size={13} /> Exportar CSV</button>
+          {folhaAtual && !isFechada && (
+            <button className="btn" onClick={async () => {
+              if (!confirm('Importar todos os colaboradores ativos que ainda não estão nesta folha?')) return
+              const qtd = await importarColaboradoresParaFolha(folhaId)
+              if (qtd > 0) { refetchCLT() }
+            }}>
+              <Users size={13} /> Importar colaboradores
+            </button>
+          )}
           {folhaAtual && !isFechada && pendentes > 0 && (
             <button className="btn" style={{ color: "var(--green)", borderColor: "#A8D575", background: "var(--green-light)" }} onClick={handleValidarTodos}>
               <CheckSquare size={13} /> Validar todos
