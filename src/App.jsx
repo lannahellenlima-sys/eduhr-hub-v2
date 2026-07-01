@@ -22,6 +22,7 @@ import Rescisoes from './pages/Rescisoes'
 import AvaliacaoDocente from './pages/AvaliacaoDocente'
 import AvaliacaoColaborador from './pages/AvaliacaoColaborador'
 import GestaoUsuarios from './pages/GestaoUsuarios'
+import ImportacaoFolha from './pages/ImportacaoFolha'
 // Módulo Acadêmico
 import DashboardAcademico from './pages/academico/DashboardAcademico'
 import MatrizesCurriculares from './pages/academico/MatrizesCurriculares'
@@ -68,6 +69,7 @@ export default function App() {
               <Route path="avaliacao-adm" element={<AvaliacaoColaborador />} />
             {/* Administração */}
             <Route path="usuarios" element={<GestaoUsuarios />} />
+            <Route path="importacao-folha" element={<ImportacaoFolha />} />
           </Route>
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>

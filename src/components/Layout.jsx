@@ -3,7 +3,7 @@ import {
   LayoutDashboard, Users, GraduationCap, FileText,
   Calendar, BarChart3, CheckSquare, LogOut, History,
   BookOpen, TrendingUp, ChevronDown, ChevronRight,
-  UserMinus, Clock, Shield, Star
+  UserMinus, Clock, Shield, Star, FileUp
 } from 'lucide-react'
 import { useState } from 'react'
 import { useAuth } from '../hooks/useAuth'
@@ -49,6 +49,7 @@ export default function Layout() {
               <NavLink to="/folha-administrativo" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><FileText size={14} /> Folha Administrativo</NavLink>
               <NavLink to="/folha-docente" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><FileText size={14} /> Folha Docente</NavLink>
               <NavLink to="/fechamento" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><CheckSquare size={14} /> Fechamento Mensal</NavLink>
+              <NavLink to="/importacao-folha" className={({ isActive }) => `nav-item ${isActive ? 'active' : ''}`}><FileUp size={14} /> Importar histórico</NavLink>
             </div>
           )}
 
